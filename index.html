@@ -403,9 +403,68 @@
 
   .fade-up{opacity:0;transform:translateY(24px);transition:opacity .7s ease, transform .7s ease;}
   .fade-up.show{opacity:1;transform:translateY(0);}
+
+  /* ==========================================================================
+     COVER SCREEN (layar pembuka)
+     ==========================================================================
+     - Ini layar "gerbang" yang muncul pertama kali sebelum konten pricelist
+       kelihatan. Tujuannya: tombol "LIHAT PRICE LIST" di sini di-KLIK oleh
+       user secara manual/asli, dan klik ini dipakai untuk "membuka izin"
+       auto-play semua video di halaman (lihat script di bawah, fungsi
+       primeAllVideos). Ini trik yang sama dipakai di web undangan pernikahan
+       supaya musik/video bisa auto-play walau dibuka dari WhatsApp.
+     - Body dikunci scroll-nya (overflow:hidden) selagi cover ini tampil,
+       supaya user tidak bisa scroll duluan sebelum klik tombol.
+     ========================================================================== */
+  body.cover-active{overflow:hidden;height:100vh;}
+  #coverScreen{
+    position:fixed;inset:0;z-index:999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:40px 24px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(169,129,46,0.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(169,129,46,0.10), transparent 45%),
+      var(--cream);
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  #coverScreen.hide{opacity:0;visibility:hidden;pointer-events:none;}
+  #coverScreen .logo-img{width:190px;max-width:55vw;height:auto;object-fit:contain;margin:0 auto 22px;display:block;}
+  #coverScreen h1{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,7vw,3rem);color:var(--ink);font-weight:900;line-height:1.15;letter-spacing:.5px;}
+  #coverScreen .cover-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--gold-dark);margin-top:10px;}
+  #coverScreen .cover-sub{font-family:'Poppins',sans-serif;font-size:.9rem;color:var(--ink-soft);margin-top:18px;max-width:340px;}
+  #coverBtn{
+    margin-top:34px;font-family:'Poppins',sans-serif;font-weight:600;font-size:1rem;
+    letter-spacing:1px;background:var(--gold-dark);color:var(--white);border:none;
+    padding:16px 40px;border-radius:40px;cursor:pointer;
+    box-shadow:0 10px 24px rgba(124,90,30,0.35);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  #coverBtn:active{transform:scale(0.96);box-shadow:0 6px 14px rgba(124,90,30,0.3);}
+  #coverScreen .cover-ring{
+    width:64px;height:64px;border-radius:50%;border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px;
+    animation:coverPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes coverPulse{0%,100%{transform:scale(1);opacity:.7;}50%{transform:scale(1.08);opacity:1;}}
 </style>
 </head>
-<body>
+<body class="cover-active">
+
+<!-- ==========================================================================
+     COVER SCREEN (layar pembuka sebelum konten pricelist tampil)
+     ==========================================================================
+     - Ganti teks di bawah sesuka hati (judul, tagline, teks tombol).
+     - Logo otomatis diisi sama seperti logo lain di halaman (lewat script
+       LOGO_SRC di bagian bawah <body>).
+     ========================================================================== -->
+<div id="coverScreen">
+  <div class="cover-ring">✦</div>
+  <img class="logo-img" alt="Sinar Ode Content Creator logo">
+  <h1>SINAR ODE<br>CONTENT CREATOR</h1>
+  <span class="cover-tagline">"Creating Timeless Celebrations"</span>
+  <p class="cover-sub">Dokumentasi foto &amp; video wedding dan event, estetik dan modern.</p>
+  <button id="coverBtn" type="button">LIHAT PRICE LIST</button>
+</div>
 
 <nav class="nav">
   <div class="wrap">
@@ -450,7 +509,7 @@
         <div class="phone-mockup">
           <div class="phone-frame">
             <!-- TAMBAHKAN VIDEO DI SINI: isi src="" dengan nama file video, contoh src="video-about.mp4" -->
-            <video class="phone-video" muted loop playsinline preload="auto" src="wcc 1.mp4"></video>
+            <video class="phone-video" muted loop playsinline preload="auto" src="wcc_1.mp4"></video>
             <div class="tap-icon"></div>
           </div>
         </div>
@@ -691,14 +750,14 @@
       <div class="phone-mockup">
         <div class="phone-frame">
           <!-- TAMBAHKAN VIDEO DI SINI: isi src="" dengan nama file video, contoh src="video-wedding-1.mp4" -->
-          <video class="phone-video" muted loop playsinline preload="auto" src="wcc 2.mp4"></video>
+          <video class="phone-video" muted loop playsinline preload="auto" src="wcc_2.mp4"></video>
             <div class="tap-icon"></div>
         </div>
       </div>
       <div class="phone-mockup">
         <div class="phone-frame">
           <!-- TAMBAHKAN VIDEO DI SINI: isi src="" dengan nama file video, contoh src="video-wedding-2.mp4" -->
-          <video class="phone-video" muted loop playsinline preload="auto" src="wcc 3.mp4"></video>
+          <video class="phone-video" muted loop playsinline preload="auto" src="wcc_3.mp4"></video>
             <div class="tap-icon"></div>
         </div>
       </div>
@@ -741,6 +800,7 @@
         <li>Dokumentasi acara bisa kami pakai untuk portofolio.</li>
         <li>Reshedule (perubahan tanggal) dapat dilakukan apabila masih tersedia.</li>
         <li>Jika klien tidak mengizinkan penggunaan konten untuk publikasi, harap diinformasikan saat proses booking.</li>
+        <li>Jika ada gladi/final meeting dan mewajibkan WCC hadir akan dikenakan biaya transportasi.</li>
       </ul>
     </div>
 
@@ -841,6 +901,37 @@
   // ketukan, dia TIDAK akan otomatis main lagi walau masih kelihatan di
   // layar — baru main otomatis lagi setelah scroll keluar lalu masuk layar
   // ulang (dianggap "reset").
+  // ==========================================================================
+  // COVER SCREEN: tombol "LIHAT PRICE LIST"
+  // ==========================================================================
+  // Ini bagian KUNCI supaya auto-play video bisa jalan walau dibuka dari
+  // dalam WhatsApp/Instagram (yang biasanya blokir semua auto-play video).
+  // Caranya: begitu tombol di-klik oleh user (klik asli, bukan otomatis),
+  // kita langsung panggil .play() ke SEMUA video sekali saja di dalam fungsi
+  // klik ini. Karena dipanggil langsung di dalam event klik user, browser
+  // (termasuk WhatsApp) akan mengizinkannya. Setelah itu, video langsung
+  // di-pause lagi (dikembalikan ke awal), tapi browser sudah "mengizinkan"
+  // video tsb untuk main lagi kapan saja tanpa perlu klik ulang — termasuk
+  // nanti saat di-scroll otomatis oleh videoIO di bawah.
+  function primeAllVideos(){
+    document.querySelectorAll('.phone-video').forEach(video=>{
+      video.play().then(()=>{
+        video.pause();
+        video.currentTime = 0;
+        video.muted = true;
+      }).catch(()=>{});
+    });
+  }
+  const coverScreen = document.getElementById('coverScreen');
+  const coverBtn = document.getElementById('coverBtn');
+  if(coverBtn){
+    coverBtn.addEventListener('click', ()=>{
+      primeAllVideos();
+      coverScreen.classList.add('hide');
+      document.body.classList.remove('cover-active');
+    }, {once:true});
+  }
+
   const videoIO = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       const video = entry.target;
